@@ -1,0 +1,204 @@
+#include <iostream>
+#include <vector>
+#include <random>
+#include <chrono>
+
+using namespace std;
+using namespace chrono;
+
+// Generate Random Array
+vector<int> generateArray(int size)
+{
+    vector<int> arr(size);
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1, 1000);
+
+    for (int i = 0; i < size; i++)
+        arr[i] = dis(gen);
+
+    return arr;
+}
+
+// Bubble Sort
+void bubbleSort(vector<int> &a)
+{
+    int n = a.size();
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        bool swapped = false;
+
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (a[j] > a[j + 1])
+            {
+                swap(a[j], a[j + 1]);
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+            break;
+    }
+}
+
+// Selection Sort
+void selectionSort(vector<int> &a)
+{
+    int n = a.size();
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        int smallest = i;
+
+        for (int j = i + 1; j < n; j++)
+        {
+            if (a[j] < a[smallest])
+                smallest = j;
+        }
+
+        if (smallest != i)
+            swap(a[i], a[smallest]);
+    }
+}
+
+// Insertion Sort
+void insertionSort(vector<int> &a)
+{
+    for (int i = 1; i < a.size(); i++)
+    {
+        int value = a[i];
+        int j = i - 1;
+
+        while (j >= 0 && a[j] > value)
+        {
+            a[j + 1] = a[j];
+            j--;
+        }
+
+        a[j + 1] = value;
+    }
+}
+
+// Merge Sort
+void merge(vector<int> &a, int left, int mid, int right)
+{
+    vector<int> temp;
+
+    int i = left;
+    int j = mid + 1;
+
+    while (i <= mid && j <= right)
+    {
+        if (a[i] <= a[j])
+            temp.push_back(a[i++]);
+        else
+            temp.push_back(a[j++]);
+    }
+
+    while (i <= mid)
+        temp.push_back(a[i++]);
+
+    while (j <= right)
+        temp.push_back(a[j++]);
+
+    for (int k = 0; k < temp.size(); k++)
+        a[left + k] = temp[k];
+}
+
+void mergeSort(vector<int> &a, int left, int right)
+{
+    if (left >= right)
+        return;
+
+    int mid = left + (right - left) / 2;
+
+    mergeSort(a, left, mid);
+    mergeSort(a, mid + 1, right);
+
+    merge(a, left, mid, right);
+}
+
+// Quick Sort
+int partition(vector<int> &a, int low, int high)
+{
+    int pivot = a[low];
+    int left = low + 1;
+    int right = high;
+
+    while (true)
+    {
+        while (left <= high && a[left] <= pivot)
+            left++;
+
+        while (a[right] > pivot)
+            right--;
+
+        if (left < right)
+            swap(a[left], a[right]);
+        else
+            break;
+    }
+
+    swap(a[low], a[right]);
+    return right;
+}
+
+void quickSort(vector<int> &a, int low, int high)
+{
+    if (low < high)
+    {
+        int pos = partition(a, low, high);
+
+        quickSort(a, low, pos - 1);
+        quickSort(a, pos + 1, high);
+    }
+}
+
+// Measure Time
+void calculateTime(string name, vector<int> data, void (*sortFunc)(vector<int>&))
+{
+    auto start = high_resolution_clock::now();
+
+    sortFunc(data);
+
+    auto end = high_resolution_clock::now();
+
+    cout << name << " : "
+         << duration_cast<microseconds>(end - start).count()
+         << " microseconds" << endl;
+}
+
+int main()
+{
+    const int SIZE = 100;
+
+    vector<int> original = generateArray(SIZE);
+
+    cout << "Number of Elements : " << SIZE << endl << endl;
+
+    calculateTime("Bubble Sort   ", original, bubbleSort);
+    calculateTime("Selection Sort", original, selectionSort);
+    calculateTime("Insertion Sort", original, insertionSort);
+
+    vector<int> temp;
+
+    temp = original;
+    auto start = high_resolution_clock::now();
+    mergeSort(temp, 0, SIZE - 1);
+    auto end = high_resolution_clock::now();
+    cout << "Merge Sort    : "
+         << duration_cast<microseconds>(end - start).count()
+         << " microseconds" << endl;
+
+    temp = original;
+    start = high_resolution_clock::now();
+    quickSort(temp, 0, SIZE - 1);
+    end = high_resolution_clock::now();
+    cout << "Quick Sort    : "
+         << duration_cast<microseconds>(end - start).count()
+         << " microseconds" << endl;
+
+    return 0;
+}
