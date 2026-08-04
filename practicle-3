@@ -1,0 +1,102 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <chrono>
+
+using namespace std;
+using namespace chrono;
+
+//------------------ SELECTION SORT ------------------//
+void selectionSort(vector<int> &arr)
+{
+    int n = arr.size();
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        int minIndex = i;
+
+        for (int j = i + 1; j < n; j++)
+        {
+            if (arr[j] < arr[minIndex])
+                minIndex = j;
+        }
+
+        swap(arr[i], arr[minIndex]);
+    }
+}
+
+//------------------ INSERTION SORT ------------------//
+void insertionSort(vector<int> &arr)
+{
+    int n = arr.size();
+
+    for (int i = 1; i < n; i++)
+    {
+        int key = arr[i];
+        int j = i - 1;
+
+        while (j >= 0 && arr[j] > key)
+        {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+
+        arr[j + 1] = key;
+    }
+}
+
+//------------------ MAIN ------------------//
+int main()
+{
+    int n;
+
+    cout << "Enter number of elements: ";
+    cin >> n;
+
+    vector<int> original(n);
+
+    srand(time(0));
+
+    for (int i = 0; i < n; i++)
+        original[i] = rand() % 100000;
+
+    vector<int> selectionArray = original;
+    vector<int> insertionArray = original;
+
+    //---------------- SELECTION SORT ----------------//
+    auto startSelection = high_resolution_clock::now();
+
+    selectionSort(selectionArray);
+
+    auto endSelection = high_resolution_clock::now();
+
+    //---------------- INSERTION SORT ----------------//
+    auto startInsertion = high_resolution_clock::now();
+
+    insertionSort(insertionArray);
+
+    auto endInsertion = high_resolution_clock::now();
+
+    //---------------- DISPLAY TIME ----------------//
+
+    auto nanoSelection = duration_cast<nanoseconds>(endSelection - startSelection);
+    auto microSelection = duration_cast<microseconds>(endSelection - startSelection);
+    auto milliSelection = duration_cast<milliseconds>(endSelection - startSelection);
+    duration<double> secSelection = endSelection - startSelection;
+
+    auto nanoInsertion = duration_cast<nanoseconds>(endInsertion - startInsertion);
+    auto microInsertion = duration_cast<microseconds>(endInsertion - startInsertion);
+    auto milliInsertion = duration_cast<milliseconds>(endInsertion - startInsertion);
+    duration<double> secInsertion = endInsertion - startInsertion;
+
+    cout << "\n========== SELECTION SORT ==========\n";
+    cout << "Nanoseconds  : " << nanoSelection.count() << " ns\n";
+    cout << "Microseconds : " << microSelection.count() << " us\n";
+
+    cout << "\n========== INSERTION SORT ==========\n";
+    cout << "Nanoseconds  : " << nanoInsertion.count() << " ns\n";
+    cout << "Microseconds : " << microInsertion.count() << " us\n";
+
+    return 0;
+}
