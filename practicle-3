@@ -100,3 +100,14 @@ int main()
 
     return 0;
 }
+
+
+Enter number of elements: 1000
+
+========== SELECTION SORT ==========
+Nanoseconds  : 1854300 ns
+Microseconds : 1854 us
+
+========== INSERTION SORT ==========
+Nanoseconds  : 724600 ns
+Microseconds : 724 us
